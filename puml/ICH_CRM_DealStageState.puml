@@ -1,0 +1,40 @@
+@startuml ICH_CRM_DealStageState
+
+title ICH CRM — Состояния сделки (Stage) и переходы по воронке
+
+' Входная точка: лид только что появился в системе
+[*] --> Lead : Новый лид создан\n(заявка с лендинга / формы / рекламы)
+
+' --- Основные этапы воронки ---
+
+state "Lead\n(Новый лид)" as Lead
+state "Contacted\n(Связались с лидом)" as Contacted
+state "Demo / Consultation\n(Провели консультацию\nили демо-урок)" as DemoConsult
+state "Payment Process\n(Счёт выставлен /\nоплата в процессе)" as PaymentProcess
+state "Active Student\n(Оплатил и учится)" as ActiveStudent
+state "Churned\n(Перестал учиться\nдо окончания курса)" as Churned
+state "Closed Lost\n(Сделка не состоялась,\nоплаты нет)" as ClosedLost
+
+
+' --- Переходы по основной воронке ---
+
+Lead --> Contacted : Менеджер установил контакт\n(дозвон / чат / письмо)
+Contacted --> DemoConsult : Назначена консультация\nили демо-презентация
+DemoConsult --> PaymentProcess : Клиент согласен платить\nсчёт/договор отправлен
+PaymentProcess --> ActiveStudent : Оплата получена\nстудент зачислен
+ActiveStudent --> Churned : Прекратил обучение\n(ушёл раньше окончания курса)
+
+' --- Альтернативные выходы (потери) ---
+
+Lead --> ClosedLost : Не вышел на связь /\nнецелевой лид
+Contacted --> ClosedLost : Отказ до консультации
+DemoConsult --> ClosedLost : Отказ после консультации
+PaymentProcess --> ClosedLost : Не оплатил в срок
+
+' --- Финальные состояния ---
+
+ActiveStudent --> [*] : Курс успешно завершён\n(активный до конца)
+Churned --> [*] : Потерянный студент
+ClosedLost --> [*] : Сделка закрыта без оплаты
+
+@enduml
